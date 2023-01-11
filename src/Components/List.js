@@ -1,10 +1,15 @@
 import React, { Component } from "react";
 import { movies } from "./getMovies";
+import axios from "axios";
+import { API_KEY } from "../secrets";
 export default class List extends Component {
     constructor() {
         super();
         this.state = {
             hover: "",
+            parr: [1],
+            currPage: 1,
+            movies: [],
         };
     }
 
@@ -20,14 +25,24 @@ export default class List extends Component {
         });
     };
 
+    async componentDidMount() {
+        let res = await axios.get(
+            `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${this.state.currPage}`
+        );
+        // console.log(res.data);
+        this.setState({
+            movies:[...res.data.results]
+        })
+    }
+
     render() {
-        let movie = movies.results;
-        // let movie = [];
+        // let movie = movies.results;
+        let movie = this.state.movies;
         return (
             <>
                 {movie.length === 0 ? (
-                    <div class="spinner-grow text-danger" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                    <div className="spinner-grow text-danger" role="status">
+                        <span className="visually-hidden">Loading...</span>
                     </div>
                 ) : (
                     <div>
@@ -75,29 +90,28 @@ export default class List extends Component {
 
                         <div className="pagination">
                             <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
+                                <ul className="pagination">
+                                    <li className="page-item">
+                                        <a className="page-link" href="#">
                                             Previous
                                         </a>
                                     </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
-                                            1
-                                        </a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
-                                            2
-                                        </a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
-                                            3
-                                        </a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">
+
+                                    {this.state.parr.map((pageNum) => (
+                                        <li className="page-item">
+                                            <a
+                                                className="page-link"
+                                                onClick={() => {
+                                                    this.handlePageNum(pageNum);
+                                                }}
+                                            >
+                                                {pageNum}
+                                            </a>
+                                        </li>
+                                    ))}
+
+                                    <li className="page-item">
+                                        <a className="page-link" href="#">
                                             Next
                                         </a>
                                     </li>
