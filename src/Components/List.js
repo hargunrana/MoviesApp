@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { movies } from "./getMovies";
 import axios from "axios";
 import { API_KEY } from "../secrets";
+let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`
+
 export default class List extends Component {
     constructor() {
         super();
@@ -13,30 +14,43 @@ export default class List extends Component {
         };
     }
 
-    handleEnter = (id) => {
-        this.setState({
-            hover: id,
-        });
+    handleEnter = (id) => this.setState({hover: id,});
+    
+
+    handleLeave = () => this.setState({hover: "", });
+
+    changeMovies = async () => {
+        let res = await axios.get(URL + this.state.currPage);
+
+        this.setState({ movies: [...res.data.results],});
     };
 
-    handleLeave = () => {
-        this.setState({
-            hover: "",
-        });
-    };
+    handleNext = () => {
+        let tempArr = this.state.parr;
+        let newVal = tempArr[tempArr.length - 1] + 1;
 
-    async componentDidMount() {
-        let res = await axios.get(
-            `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${this.state.currPage}`
+        this.setState(
+            {
+                parr: [...this.state.parr, newVal],
+                currPage: this.state.currPage + 1,
+            },
+            this.changeMovies
         );
-        // console.log(res.data);
-        this.setState({
-            movies:[...res.data.results]
-        })
-    }
+    };
+
+    handlePrevious = () => {
+        if (this.state.currPage === 1) return;
+
+        this.setState({currPage: this.state.currPage - 1,},this.changeMovies);
+    };
+
+    handlePageNum = (pageNum) => this.setState({currPage: pageNum,},this.changeMovies);
+    
+
+    componentDidMount = async () => this.changeMovies();
 
     render() {
-        // let movie = movies.results;
+        
         let movie = this.state.movies;
         return (
             <>
@@ -92,7 +106,10 @@ export default class List extends Component {
                             <nav aria-label="Page navigation example">
                                 <ul className="pagination">
                                     <li className="page-item">
-                                        <a className="page-link" href="#">
+                                        <a
+                                            className="page-link"
+                                            onClick={this.handlePrevious}
+                                        >
                                             Previous
                                         </a>
                                     </li>
@@ -111,7 +128,10 @@ export default class List extends Component {
                                     ))}
 
                                     <li className="page-item">
-                                        <a className="page-link" href="#">
+                                        <a
+                                            className="page-link"
+                                            onClick={this.handleNext}
+                                        >
                                             Next
                                         </a>
                                     </li>
