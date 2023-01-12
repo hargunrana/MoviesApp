@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { API_KEY } from "../secrets";
-let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`
+let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`;
 
 export default class List extends Component {
     constructor() {
@@ -14,15 +14,14 @@ export default class List extends Component {
         };
     }
 
-    handleEnter = (id) => this.setState({hover: id,});
-    
+    handleEnter = (id) => this.setState({ hover: id });
 
-    handleLeave = () => this.setState({hover: "", });
+    handleLeave = () => this.setState({ hover: "" });
 
     changeMovies = async () => {
         let res = await axios.get(URL + this.state.currPage);
 
-        this.setState({ movies: [...res.data.results],});
+        this.setState({ movies: [...res.data.results] });
     };
 
     handleNext = () => {
@@ -41,16 +40,15 @@ export default class List extends Component {
     handlePrevious = () => {
         if (this.state.currPage === 1) return;
 
-        this.setState({currPage: this.state.currPage - 1,},this.changeMovies);
+        this.setState({ currPage: this.state.currPage - 1 }, this.changeMovies);
     };
 
-    handlePageNum = (pageNum) => this.setState({currPage: pageNum,},this.changeMovies);
-    
+    handlePageNum = (pageNum) =>
+        this.setState({ currPage: pageNum }, this.changeMovies);
 
     componentDidMount = async () => this.changeMovies();
 
     render() {
-        
         let movie = this.state.movies;
         return (
             <>
@@ -79,7 +77,8 @@ export default class List extends Component {
                                             className="card-img-top movies-img"
                                             alt="..."
                                             style={{
-                                                height: "40vh",
+                                                height: "25vh",
+                                                // width: "20vw", 
                                             }}
                                         />
 
