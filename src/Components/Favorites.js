@@ -10,13 +10,33 @@ export default class Favorites extends Component {
 
         this.state = {
             movies: [],
+            genre: [],
+            currGenre: "",
         };
     }
+
+    activeFunc = (genre) => {
+        this.setState({ currGenre: genre });
+    };
 
     async componentDidMount() {
         let res = await axios.get(URL + 1);
 
-        this.setState({ movies: [...res.data.results] });
+        let genreArr = [];
+
+        res.data.results.map((movieObj) => {
+            if (!genreArr.includes(genreId[movieObj.genre_ids[0]])) {
+                genreArr.push(genreId[movieObj.genre_ids[0]]);
+            } 
+        });
+
+        genreArr.unshift("All Genres");
+        this.setState({
+            movies: [...res.data.results],
+            genre: [...genreArr],
+            currGenre: "All Genres",
+        });
+        // console.log(genreArr);
     }
 
     render() {
@@ -24,15 +44,25 @@ export default class Favorites extends Component {
             <div className="row">
                 <div className="col-3" style={{ backgroundColor: "lightblue" }}>
                     <ul className="list-group">
-                        <li
-                            className="list-group-item active"
-                            aria-current="true"
-                        >
-                            All Genre
-                        </li>
-                        <li className="list-group-item ">Fantasy</li>
-                        <li className="list-group-item ">Action</li>
-                        <li className="list-group-item ">Horror</li>
+                        {this.state.genre.map((genre) => {
+                            return this.state.currGenre === genre ? (
+                                <li
+                                    className="list-group-item active"
+                                    aria-current="true"
+                                    onClick={() => this.activeFunc(genre)}
+                                >
+                                    {genre}
+                                </li>
+                            ) : (
+                                <li
+                                    className="list-group-item"
+                                    aria-current="true"
+                                    onClick={() => this.activeFunc(genre)}
+                                >
+                                    {genre}
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
                 <div className="col">
@@ -50,7 +80,7 @@ export default class Favorites extends Component {
                     </div>
 
                     <div className="row">
-                        <table class="table">
+                        <table className="table">
                             <thead>
                                 <tr>
                                     {/* <th scope="col">Image</th> */}
@@ -84,7 +114,7 @@ export default class Favorites extends Component {
                                         <td>
                                             <button
                                                 type="button"
-                                                class="btn btn-outline-danger"
+                                                className="btn btn-outline-danger"
                                                 style={{ marginRight: "1rem" }}
                                             >
                                                 Delete

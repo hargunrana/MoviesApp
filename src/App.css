@@ -36,10 +36,20 @@
         transform: rotate(360deg);
     }
 }
+.nav-bar {
+    background-color: #aad8f8e7;
+    width: 100vw;
+    
+    /* background-color: rgba(0, 0, 0, 0.663); */
+    /* position: fixed; */
+    /* z-index: 3; */
+    /* backdrop-filter: blur(5px); */
+}
 
 .banner-card {
-    background-color: white;
+    background-color: black;
     width: 100vw;
+    /* padding-top: 3.5rem; */
 }
 
 .banner-img {
@@ -94,7 +104,7 @@
     justify-content: center;
 }
 
-.pagination{
+.pagination {
     display: flex;
     justify-content: center;
 }
