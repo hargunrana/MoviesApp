@@ -11,6 +11,7 @@ export default class List extends Component {
             parr: [1],
             currPage: 1,
             movies: [],
+            favoritesMovies: [],
         };
     }
 
@@ -46,6 +47,25 @@ export default class List extends Component {
     handlePageNum = (pageNum) =>
         this.setState({ currPage: pageNum }, this.changeMovies);
 
+    handleFavorites = (movieObj) => {
+        let localStorageMovies =
+            JSON.parse(localStorage.getItem("movies")) || [];
+
+        if (this.state.favoritesMovies.includes(movieObj.id)) {
+            localStorageMovies = localStorageMovies.filter(
+                (movie) => movie.id !== movieObj.id
+            );
+        } else localStorageMovies.push(movieObj);
+        console.log(localStorageMovies);
+
+        localStorage.setItem("movies", JSON.stringify(localStorageMovies));
+
+        let tempData = localStorageMovies.map((movieObj) => movieObj.id);
+        this.setState({
+            favoritesMovies: [...tempData],
+        });
+    };
+
     componentDidMount = async () => this.changeMovies();
 
     render() {
@@ -78,7 +98,7 @@ export default class List extends Component {
                                             alt="..."
                                             style={{
                                                 height: "25vh",
-                                                // width: "20vw", 
+                                                // width: "20vw",
                                             }}
                                         />
 
@@ -86,15 +106,32 @@ export default class List extends Component {
                                             {movieObj.original_title}
                                         </h5>
                                         <div className="button-wrapper ">
-                                            {this.state.hover ===
-                                                movieObj.id && (
-                                                <a
-                                                    href="www.google.com"
-                                                    className="btn btn-primary movies-button"
-                                                >
-                                                    Add to Favourites
-                                                </a>
-                                            )}
+                                            {this.state.hover === movieObj.id &&
+                                                (this.state.favoritesMovies.includes(
+                                                    movieObj.id
+                                                ) ? (
+                                                    <div
+                                                        className="btn btn-danger movies-button"
+                                                        onClick={() =>
+                                                            this.handleFavorites(
+                                                                movieObj
+                                                            )
+                                                        }
+                                                    >
+                                                        Remove
+                                                    </div>
+                                                ) : (
+                                                    <div
+                                                        className="btn btn-primary movies-button"
+                                                        onClick={() =>
+                                                            this.handleFavorites(
+                                                                movieObj
+                                                            )
+                                                        }
+                                                    >
+                                                        Add to Favorites
+                                                    </div>
+                                                ))}
                                         </div>
                                     </div>
                                 );

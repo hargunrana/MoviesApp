@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { genreId } from "./getMovies";
-import { API_KEY } from "../secrets";
-let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`;
+// import { API_KEY } from "../secrets";
+// let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`;
 
 export default class Favorites extends Component {
     constructor() {
@@ -12,34 +12,63 @@ export default class Favorites extends Component {
             movies: [],
             genre: [],
             currGenre: "",
+            currText: "",
         };
     }
 
-    activeFunc = (genre) => {
+    handleCurrGenre = (genre) => {
         this.setState({ currGenre: genre });
     };
+    handleText = (e) => {
+        this.setState({ currText: e.target.value });
+    };
 
+    handleDelete = (movie) => {
+        let newMovies = this.state.movies.filter(
+            (movieObj) => movie.id !== movieObj.id
+        );
+        this.setState({
+            movies: [...newMovies],
+        });
+        localStorage.setItem("movies", JSON.stringify(newMovies));
+    };
     async componentDidMount() {
-        let res = await axios.get(URL + 1);
+        // let res = await axios.get(URL + 1);
+        let res = JSON.parse(localStorage.getItem("movies"));
 
         let genreArr = [];
 
-        res.data.results.map((movieObj) => {
+        res.map((movieObj) => {
             if (!genreArr.includes(genreId[movieObj.genre_ids[0]])) {
                 genreArr.push(genreId[movieObj.genre_ids[0]]);
-            } 
+            }
         });
 
         genreArr.unshift("All Genres");
         this.setState({
-            movies: [...res.data.results],
+            movies: [...res],
             genre: [...genreArr],
             currGenre: "All Genres",
         });
-        // console.log(genreArr);
     }
 
     render() {
+        let filteredMovies = this.state.movies;
+
+        if (this.state.currText !== "") {
+            filteredMovies = this.state.movies.filter((movieObj) => {
+                let movieName = movieObj.original_title.toLowerCase();
+                return movieName.includes(this.state.currText);
+            });
+        }
+
+        if (this.state.currGenre !== "All Genres") {
+            filteredMovies = this.state.movies.filter(
+                (movieObj) =>
+                    genreId[movieObj.genre_ids[0]] === this.state.currGenre
+            );
+        }
+
         return (
             <div className="row">
                 <div className="col-3" style={{ backgroundColor: "lightblue" }}>
@@ -49,7 +78,7 @@ export default class Favorites extends Component {
                                 <li
                                     className="list-group-item active"
                                     aria-current="true"
-                                    onClick={() => this.activeFunc(genre)}
+                                    // onClick={() => this.handleCurrGenre(genre)}
                                 >
                                     {genre}
                                 </li>
@@ -57,7 +86,7 @@ export default class Favorites extends Component {
                                 <li
                                     className="list-group-item"
                                     aria-current="true"
-                                    onClick={() => this.activeFunc(genre)}
+                                    onClick={() => this.handleCurrGenre(genre)}
                                 >
                                     {genre}
                                 </li>
@@ -71,6 +100,8 @@ export default class Favorites extends Component {
                             type="text"
                             className="col"
                             placeholder="Search"
+                            value={this.state.currText}
+                            onChange={this.handleText}
                         ></input>
                         <input
                             type="number"
@@ -86,13 +117,17 @@ export default class Favorites extends Component {
                                     {/* <th scope="col">Image</th> */}
                                     <th scope="col">Title</th>
                                     <th scope="col">Genre</th>
-                                    <th scope="col">Popularity</th>
+                                    <th scope="col">
+                                        <i class="fa-solid fa-caret-up" />
+                                        Popularity
+                                        <i class="fa-solid fa-caret-down" />
+                                    </th>
                                     <th scope="col">Rating</th>
                                     <th scope="col">Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.state.movies.map((movieObj) => (
+                                {filteredMovies.map((movieObj) => (
                                     <tr>
                                         <td scope="row">
                                             <img
@@ -116,6 +151,9 @@ export default class Favorites extends Component {
                                                 type="button"
                                                 className="btn btn-outline-danger"
                                                 style={{ marginRight: "1rem" }}
+                                                onClick={() =>
+                                                    this.handleDelete(movieObj)
+                                                }
                                             >
                                                 Delete
                                             </button>
