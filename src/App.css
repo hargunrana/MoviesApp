@@ -39,7 +39,7 @@
 .nav-bar {
     background-color: #aad8f8e7;
     width: 100vw;
-    
+
     /* background-color: rgba(0, 0, 0, 0.663); */
     /* position: fixed; */
     /* z-index: 3; */
@@ -107,6 +107,9 @@
 .pagination {
     display: flex;
     justify-content: center;
+}
+.page-link:hover {
+    cursor: pointer;
 }
 
 @media screen and (max-width: 400px) {

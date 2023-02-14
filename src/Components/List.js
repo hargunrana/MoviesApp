@@ -14,17 +14,19 @@ export default class List extends Component {
             favoritesMovies: [],
         };
     }
-
+    // Favorite/Remove button hovering
     handleEnter = (id) => this.setState({ hover: id });
 
     handleLeave = () => this.setState({ hover: "" });
 
+    // API request for movies
     changeMovies = async () => {
         let res = await axios.get(URL + this.state.currPage);
 
         this.setState({ movies: [...res.data.results] });
     };
 
+    // Pagination
     handleNext = () => {
         let tempArr = this.state.parr;
         let newVal = tempArr[tempArr.length - 1] + 1;
@@ -47,6 +49,7 @@ export default class List extends Component {
     handlePageNum = (pageNum) =>
         this.setState({ currPage: pageNum }, this.changeMovies);
 
+    // Favorites
     handleFavorites = (movieObj) => {
         let localStorageMovies =
             JSON.parse(localStorage.getItem("movies")) || [];
@@ -98,7 +101,6 @@ export default class List extends Component {
                                             alt="..."
                                             style={{
                                                 height: "25vh",
-                                                // width: "20vw",
                                             }}
                                         />
 
@@ -146,7 +148,7 @@ export default class List extends Component {
                                             className="page-link"
                                             onClick={this.handlePrevious}
                                         >
-                                            Previous
+                                            &laquo;
                                         </a>
                                     </li>
 
@@ -168,7 +170,7 @@ export default class List extends Component {
                                             className="page-link"
                                             onClick={this.handleNext}
                                         >
-                                            Next
+                                            &raquo;
                                         </a>
                                     </li>
                                 </ul>

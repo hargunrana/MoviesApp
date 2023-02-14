@@ -1,8 +1,5 @@
 import React, { Component } from "react";
-// import axios from "axios";
 import { genreId } from "./getMovies";
-// import { API_KEY } from "../secrets";
-// let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`;
 
 export default class Favorites extends Component {
     constructor() {
@@ -13,27 +10,69 @@ export default class Favorites extends Component {
             genre: [],
             currGenre: "",
             currText: "",
+            limit: 5,
+            currPage: 1,
         };
     }
 
-    handleCurrGenre = (genre) => {
-        this.setState({ currGenre: genre });
+    handleCurrGenre = (genre) => this.setState({ currGenre: genre });
+
+    handleText = (e) => this.setState({ currText: e.target.value });
+
+    // Sorting the Movies
+    sortPopularityAsc = () => {
+        let allMovies = this.state.movies;
+        allMovies.sort((objA, objB) => objA.popularity - objB.popularity);
+
+        this.setState({ movies: [...allMovies] });
     };
-    handleText = (e) => {
-        this.setState({ currText: e.target.value });
+    sortPopularityDesc = () => {
+        let allMovies = this.state.movies;
+        allMovies.sort((objA, objB) => objB.popularity - objA.popularity);
+
+        this.setState({ movies: [...allMovies] });
     };
+
+    sortRatingAsc = () => {
+        let allMovies = this.state.movies;
+        allMovies.sort((objA, objB) => objA.vote_average - objB.vote_average);
+
+        this.setState({ movies: [...allMovies] });
+    };
+    sortRatingDesc = () => {
+        let allMovies = this.state.movies;
+        allMovies.sort((objA, objB) => {
+            return objB.vote_average - objA.vote_average;
+        });
+
+        this.setState({ movies: [...allMovies] });
+    };
+
+    // Pagination
+    handlePageNum = (page) => this.setState({ currPage: page });
 
     handleDelete = (movie) => {
         let newMovies = this.state.movies.filter(
             (movieObj) => movie.id !== movieObj.id
         );
-        this.setState({
-            movies: [...newMovies],
-        });
+
+        this.setState({ movies: [...newMovies] });
         localStorage.setItem("movies", JSON.stringify(newMovies));
     };
+
+    handlePageNext = () => {
+        if (this.state.currPage == this.state.movies.length / this.state.limit)
+            return;
+
+        this.setState({ currPage: this.state.currPage + 1 });
+    };
+    handlePagePrev = () => {
+        if (this.state.currPage == 1) return;
+
+        this.setState({ currPage: this.state.currPage - 1 });
+    };
+
     async componentDidMount() {
-        // let res = await axios.get(URL + 1);
         let res = JSON.parse(localStorage.getItem("movies"));
 
         let genreArr = [];
@@ -55,6 +94,7 @@ export default class Favorites extends Component {
     render() {
         let filteredMovies = this.state.movies;
 
+        // Search
         if (this.state.currText !== "") {
             filteredMovies = this.state.movies.filter((movieObj) => {
                 let movieName = movieObj.original_title.toLowerCase();
@@ -62,6 +102,7 @@ export default class Favorites extends Component {
             });
         }
 
+        // Genres
         if (this.state.currGenre !== "All Genres") {
             filteredMovies = this.state.movies.filter(
                 (movieObj) =>
@@ -69,9 +110,24 @@ export default class Favorites extends Component {
             );
         }
 
+        // Pagination
+        let numOfPages =
+            filteredMovies.length != 0
+                ? Math.ceil(filteredMovies.length / this.state.limit)
+                : 0;
+
+        let pagesArr = [];
+        for (let i = 1; i <= numOfPages; i++) {
+            pagesArr.push(i);
+        }
+
+        let si = (this.state.currPage - 1) * this.state.limit;
+        let ei = si + this.state.limit - 1;
+        filteredMovies = filteredMovies.slice(si, ei + 1);
+
         return (
             <div className="row">
-                <div className="col-3" style={{ backgroundColor: "lightblue" }}>
+                <div className="col-3">
                     <ul className="list-group">
                         {this.state.genre.map((genre) => {
                             return this.state.currGenre === genre ? (
@@ -118,11 +174,27 @@ export default class Favorites extends Component {
                                     <th scope="col">Title</th>
                                     <th scope="col">Genre</th>
                                     <th scope="col">
-                                        <i class="fa-solid fa-caret-up" />
+                                        <i
+                                            class="fa-solid fa-caret-up"
+                                            onClick={this.sortPopularityAsc}
+                                        />
                                         Popularity
-                                        <i class="fa-solid fa-caret-down" />
+                                        <i
+                                            class="fa-solid fa-caret-down"
+                                            onClick={this.sortPopularityDesc}
+                                        />
                                     </th>
-                                    <th scope="col">Rating</th>
+                                    <th scope="col">
+                                        <i
+                                            class="fa-solid fa-caret-up"
+                                            onClick={this.sortRatingAsc}
+                                        />
+                                        Rating
+                                        <i
+                                            class="fa-solid fa-caret-down"
+                                            onClick={this.sortRatingDesc}
+                                        />
+                                    </th>
                                     <th scope="col">Delete</th>
                                 </tr>
                             </thead>
@@ -163,6 +235,41 @@ export default class Favorites extends Component {
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <div className="pagination">
+                    <nav aria-label="Page navigation example">
+                        <ul className="pagination">
+                            <li className="page-item">
+                                <a
+                                    className="page-link"
+                                    onClick={this.handlePagePrev}
+                                >
+                                    &laquo;
+                                </a>
+                            </li>
+
+                            {pagesArr.map((page) => (
+                                <li className="page-item">
+                                    <a
+                                        className="page-link"
+                                        onClick={() => this.handlePageNum(page)}
+                                    >
+                                        {page}
+                                    </a>
+                                </li>
+                            ))}
+
+                            <li className="page-item">
+                                <a
+                                    className="page-link"
+                                    onClick={this.handlePageNext}
+                                >
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         );
