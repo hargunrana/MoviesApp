@@ -194,7 +194,7 @@ function Favorites() {
                         <tbody>
                             {filteredMovies.map((movieObj) => (
                                 <tr>
-                                    <td scope="row">
+                                    <td >
                                         <img
                                             src={`http://image.tmdb.org/t/p/original/${movieObj.backdrop_path}`}
                                             alt="..."
