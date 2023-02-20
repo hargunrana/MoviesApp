@@ -4,16 +4,16 @@ import { API_KEY } from "../secrets";
 let URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=`;
 
 function List() {
-    const [hover, setHover] = useState("");
+    // const [hover, setHover] = useState("");
     const [parr, setParr] = useState([1]);
     const [currPage, setCurrPage] = useState(1);
     const [movies, setMovies] = useState([]);
     const [favoritesMovies, setFavoritesMovies] = useState([]);
 
     // Favorite/Remove button hovering
-    let handleEnter = (id) => setHover(id);
+    // let handleEnter = (id) => setHover(id);
 
-    let handleLeave = () => setHover("");
+    // let handleLeave = () => setHover("");
 
     // API request for movies
     let changeMovies = async () => {
@@ -77,52 +77,62 @@ function List() {
                     <div className="movies-list">
                         {movie.map((movieObj) => {
                             return (
-                                <div
-                                    className="card movies-card"
-                                    onMouseEnter={() =>
-                                        handleEnter(movieObj.id)
-                                    }
-                                    onMouseLeave={handleLeave}
-                                >
-                                    <img
-                                        src={`http://image.tmdb.org/t/p/original/${movieObj.backdrop_path}`}
-                                        className="card-img-top movies-img"
-                                        alt="..."
-                                        style={{
-                                            height: "25vh",
-                                        }}
-                                    />
+                                <div className="movie-item">
+                                    <div class="col">
+                                        <div class="card shadow-sm">
+                                            <div className="movies-img">
+                                                <img
+                                                    src={`http://image.tmdb.org/t/p/original/${movieObj.backdrop_path}`}
+                                                    className="card-img-top "
+                                                    alt="..."
+                                                    style={{
+                                                        height: "25vh",
+                                                    }}
+                                                />
+                                            </div>
 
-                                    <h5 className="card-title movies-title ">
-                                        {movieObj.original_title}
-                                    </h5>
-                                    <div className="button-wrapper ">
-                                        {hover === movieObj.id &&
-                                            (favoritesMovies.includes(
-                                                movieObj.id
-                                            ) ? (
-                                                <div
-                                                    className="btn btn-danger movies-button"
-                                                    onClick={() =>
-                                                        handleFavorites(
-                                                            movieObj
-                                                        )
-                                                    }
-                                                >
-                                                    Remove
+                                            <div class="card-body">
+                                                <h6 className="card-title">
+                                                    {movieObj.title}
+                                                </h6>
+                                                <p class="card-text">
+                                                    {movieObj.overview.slice(
+                                                        0,
+                                                        200
+                                                    )}
+                                                </p>
+
+                                                <div className="movie-btn">
+                                                    {favoritesMovies.includes(
+                                                        movieObj.id
+                                                    ) ? (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-danger movies-button"
+                                                            onClick={() =>
+                                                                handleFavorites(
+                                                                    movieObj
+                                                                )
+                                                            }
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-primary movies-button"
+                                                            onClick={() =>
+                                                                handleFavorites(
+                                                                    movieObj
+                                                                )
+                                                            }
+                                                        >
+                                                            Add to Favorite
+                                                        </button>
+                                                    )}
                                                 </div>
-                                            ) : (
-                                                <div
-                                                    className="btn btn-primary movies-button"
-                                                    onClick={() =>
-                                                        handleFavorites(
-                                                            movieObj
-                                                        )
-                                                    }
-                                                >
-                                                    Add to Favorites
-                                                </div>
-                                            ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             );

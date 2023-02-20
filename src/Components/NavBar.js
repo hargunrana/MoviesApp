@@ -40,6 +40,12 @@ function NavBar() {
                     </div>
                 </div>
             </nav>
+            <div
+                style={{
+                    height: "3.5rem",
+                    backgroundColor: "rgba(170, 216, 248)",
+                }}
+            ></div>
         </>
     );
 }
