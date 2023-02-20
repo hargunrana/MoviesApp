@@ -77,9 +77,9 @@ function List() {
                     <div className="movies-list">
                         {movie.map((movieObj) => {
                             return (
-                                <div className="movie-item">
-                                    <div class="col">
-                                        <div class="card shadow-sm">
+                                <div className="movie-item" key={movieObj.id}>
+                                    <div className="col">
+                                        <div className="card shadow-sm">
                                             <div className="movies-img">
                                                 <img
                                                     src={`http://image.tmdb.org/t/p/original/${movieObj.backdrop_path}`}
@@ -91,11 +91,11 @@ function List() {
                                                 />
                                             </div>
 
-                                            <div class="card-body">
+                                            <div className="card-body">
                                                 <h6 className="card-title">
                                                     {movieObj.title}
                                                 </h6>
-                                                <p class="card-text">
+                                                <p className="card-text">
                                                     {movieObj.overview.slice(
                                                         0,
                                                         200
@@ -142,7 +142,7 @@ function List() {
                     <div className="pagination">
                         <nav aria-label="Page navigation example">
                             <ul className="pagination">
-                                <li className="page-item">
+                                <li className="page-item" key="1">
                                     <div
                                         className="page-link"
                                         onClick={handlePrevious}
@@ -152,7 +152,7 @@ function List() {
                                 </li>
 
                                 {parr.map((pageNum) => (
-                                    <li className="page-item">
+                                    <li className="page-item" key={pageNum}>
                                         <div
                                             className="page-link"
                                             onClick={() => {
@@ -164,7 +164,7 @@ function List() {
                                     </li>
                                 ))}
 
-                                <li className="page-item">
+                                <li className="page-item" key="2">
                                     <div
                                         className="page-link"
                                         onClick={handleNext}
